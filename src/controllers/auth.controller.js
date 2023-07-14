@@ -20,9 +20,8 @@ export const signin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await db.collection('users').findOne({ email });
-    const validate_password = bcrypt.compareSync(password, user.password);
-
     if (!user) return res.status(404).send("Usuário não cadastrado");
+    const validate_password = bcrypt.compareSync(password, user.password);
     if (!validate_password) return res.status(401).send("Senha incorreta");
 
     const token = uuid();
