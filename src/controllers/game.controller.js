@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { db } from "../database/database.connection.js"
 
 export const registerGame = async (req, res) => {
@@ -18,5 +19,19 @@ export const getAllGames = async (req, res) => {
     return res.send(games);
   } catch (e) {
     return res.status(500).send(e.message);
+  };
+};
+
+export const getGameById = async (req, res) => {
+  const { id } = req.params;
+  if(id.length !== 24) return res.sendStatus(422);
+
+  try {
+    const game = await db.collection('games').findOne({ _id: new ObjectId(id) });
+    if(!game) return res.sendStatus(404);
+
+    return res.send(game);
+  } catch (e) {
+    res.status(500).send(e.message);
   };
 };
