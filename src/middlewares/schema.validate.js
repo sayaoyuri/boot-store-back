@@ -1,5 +1,6 @@
 export const validateSchema = (schema) => {
   return (req, res, next) => {
+    console.log(req.headers, req.body);
     try {
       const validation = schema.validate(req.body, { abortEarly: false });
       if (validation.error) {

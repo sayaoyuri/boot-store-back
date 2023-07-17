@@ -38,16 +38,16 @@ export const deleteOrder = async (req, res) => {
   }
 
   try {
-    const { email } = req.body;
     const { index } = req.params;
+    const { email } = res.locals;
 
     const order = await db.collection('order').findOne({ email });
     if (!order) return res.status(403).send('Email não cadastrado!');
     if (!(order.items.length > index)) return res.status(404).send(`Item na posição ${index} não encontrado!`);
 
-    await db.collection('order').UpdateOne({ email }, { $unset: { [`items.${index}`]: 1 } });
+    await db.collection('order').updateOne({ email }, { $unset: { [`items.${index}`]: 1 } });
     await db.collection('order').updateOne({ email }, {
-      $inc: { total: -1 * parseFloat(items[index].price) },
+      $inc: { total: -1 * parseFloat(order.items[index]?.price) },
       $pull: { items: null }
     });
 
