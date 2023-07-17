@@ -6,11 +6,8 @@ export const validateSchema = (schema) => {
         const errors = validation.error.details.map(detail => detail.message);
         return res.status(422).send(errors);
       }
-
-      res.locals = { ...validation.value };
-    } catch (error) {
-      return res.status(500).send("Ocorreu um erro ao processar a requisição");
-    };
+      res.locals = { ...res.locals, ...validation.value };
+    } catch (err) { res.status(500).send(err.message); }
 
     next();
   };
