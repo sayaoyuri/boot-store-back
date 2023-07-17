@@ -1,16 +1,16 @@
 import { ObjectId } from "mongodb";
-import { db } from "../database/database.connection.js"
+import { db } from "../database/database.connection.js";
 
 export const registerGame = async (req, res) => {
   try {
     res.locals.views = 0;
 
     const result = await db.collection('games').insertOne(res.locals);
-    if(result.acknowledged) return res.sendStatus(201);
+    if (result.acknowledged) return res.sendStatus(201);
   } catch (e) {
     return res.status(500).send(e.message);
   }
-}
+};
 
 export const getAllGames = async (req, res) => {
   try {
@@ -24,11 +24,14 @@ export const getAllGames = async (req, res) => {
 
 export const getGameById = async (req, res) => {
   const { id } = req.params;
-  if(id.length !== 24) return res.sendStatus(422);
+  if (id.length !== 24) return res.sendStatus(422);
 
   try {
-    const game = await db.collection('games').findOne({ _id: new ObjectId(id) });
-    if(!game) return res.sendStatus(404);
+    const { value: game } = await db.collection('games').findOneAndUpdate({ _id: new ObjectId(id) }, {
+      $inc: { views: 1 }
+    }, { returnDocument: "after" });
+
+    if (!game) return res.sendStatus(404);
 
     return res.send(game);
   } catch (e) {
